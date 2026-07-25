@@ -318,10 +318,19 @@ public class InspectorService : IDisposable
     /// <summary>
     /// Consistent error for expired/unknown element handles, with recovery guidance for the caller.
     /// </summary>
-    private static string StaleHandleError(string handle) =>
-        $"Element handle '{handle}' not found. Handles expire when the target app restarts, " +
-        "the Inspector is re-injected, or the element is removed from the UI and garbage-collected. " +
-        "Re-run wpf_find_elements (CLI: find) to get fresh handles.";
+    private static string StaleHandleError(string handle)
+    {
+        if (handle.StartsWith("window_", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"'{handle}' is the Win32 main_window_handle from wpf_attach, not a visual-tree " +
+                   "element handle (elem_XXXXXXXX). Omit element_handle / root_handle to target the " +
+                   "main window, or pass a handle from wpf_find_elements.";
+        }
+
+        return $"Element handle '{handle}' not found. Handles expire when the target app restarts, " +
+               "the Inspector is re-injected, or the element is removed from the UI and garbage-collected. " +
+               "Re-run wpf_find_elements (CLI: find) to get fresh handles.";
+    }
 
     private static string WrongElementTypeError(string handle, DependencyObject element, string requiredType) =>
         $"Element '{handle}' is a {element.GetType().Name}, which is not a {requiredType}; " +
@@ -1010,16 +1019,24 @@ public class InspectorService : IDisposable
     {
         var request = IpcSerializer.DeserializeRequestData<CaptureScreenshotRequest>(data);
 
-        UIElement? element = null;
-        if (!string.IsNullOrEmpty(request?.ElementHandle))
+        // window_0x… from wpf_attach is HWND metadata — treat like "no handle" (main window).
+        var handle = request?.ElementHandle;
+        if (!string.IsNullOrEmpty(handle) &&
+            handle!.StartsWith("window_", StringComparison.OrdinalIgnoreCase))
         {
-            var resolved = _treeWalker.ResolveHandle(request.ElementHandle);
+            handle = null;
+        }
+
+        UIElement? element = null;
+        if (!string.IsNullOrEmpty(handle))
+        {
+            var resolved = _treeWalker.ResolveHandle(handle!);
             if (resolved == null)
             {
                 return new CaptureScreenshotResponse
                 {
                     Success = false,
-                    Error = StaleHandleError(request.ElementHandle)
+                    Error = StaleHandleError(handle!)
                 };
             }
             element = resolved as UIElement;
@@ -1028,7 +1045,7 @@ public class InspectorService : IDisposable
                 return new CaptureScreenshotResponse
                 {
                     Success = false,
-                    Error = WrongElementTypeError(request.ElementHandle, resolved, "UIElement")
+                    Error = WrongElementTypeError(handle!, resolved, "UIElement")
                 };
             }
         }

@@ -41,7 +41,7 @@ public class WpfTools
     }
 
     [McpServerTool]
-    [Description("Attach to a WPF application by process ID or name. Set auto_inject=true to automatically inject the Inspector into processes that don't have it pre-loaded.")]
+    [Description("Attach to a WPF application by process ID or name. Set auto_inject=true to automatically inject the Inspector into processes that don't have it pre-loaded. main_window_handle (window_0x…) is Win32 HWND metadata only — do NOT pass it as element_handle to other tools; omit element_handle for the whole window, or use elem_XXXXXXXX from wpf_find_elements.")]
     public async Task<object> WpfAttach(int? process_id = null, string? process_name = null, bool auto_inject = false)
     {
         if (process_id == null && string.IsNullOrEmpty(process_name))
@@ -439,7 +439,7 @@ public class WpfTools
     }
 
     [McpServerTool]
-    [Description("Capture a screenshot of the WPF window or a specific element. Returns an image that can be visually analyzed. Use element_handle to capture a specific element, or omit for the entire window. mode='render' (default) re-renders the visual off-screen — works even if the window is covered, but CANNOT see open Popups, ComboBox dropdowns, context menus or tooltips. mode='screen' captures the actual on-screen pixels (GDI) and DOES include them — use it right after clicking something that opened a popup/menu; requires the window to be visible and unobstructed.")]
+    [Description("Capture a screenshot of the WPF window or a specific element. Returns an image that can be visually analyzed. Omit element_handle (or pass null) for the entire main window — do NOT pass main_window_handle from wpf_attach (window_0x…); that is not a visual-tree handle. Pass elem_XXXXXXXX from wpf_find_elements to capture one control. mode='render' (default) re-renders the visual off-screen — works even if the window is covered, but CANNOT see open Popups, ComboBox dropdowns, context menus or tooltips. mode='screen' captures the actual on-screen pixels (GDI) and DOES include them — use it right after clicking something that opened a popup/menu; requires the window to be visible and unobstructed.")]
     public async Task<CallToolResult> WpfCaptureScreenshot(
         string? element_handle = null,
         int max_width = 1920,
@@ -454,6 +454,9 @@ public class WpfTools
         {
             throw new ArgumentException("mode must be 'render' or 'screen'");
         }
+
+        // window_0x… from wpf_attach is HWND metadata, not an elem_ handle — treat as whole window.
+        element_handle = ElementHandleNormalizer.ForVisualTree(element_handle);
 
         var result = await _ipcBridge.CaptureScreenshotAsync(element_handle, max_width, max_height, mode);
 

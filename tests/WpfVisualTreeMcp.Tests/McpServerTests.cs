@@ -286,6 +286,49 @@ public class WpfToolsTests
     }
 
     [Fact]
+    public async Task WpfCaptureScreenshot_MapsAttachWindowHandleToWholeWindow()
+    {
+        _ipcBridgeMock
+            .Setup(x => x.CaptureScreenshotAsync(null, 1920, 1080, "render"))
+            .ReturnsAsync(new ScreenshotResult
+            {
+                ImageBase64 = "abc",
+                Width = 100,
+                Height = 50,
+                MimeType = "image/png",
+                ElementType = "MainWindow"
+            });
+
+        // Agents often pass main_window_handle from wpf_attach by mistake.
+        var result = await _tools.WpfCaptureScreenshot(element_handle: "window_0x100C4C", mode: "render");
+
+        result.Should().NotBeNull();
+        result.Content.Should().NotBeEmpty();
+        _ipcBridgeMock.Verify(x => x.CaptureScreenshotAsync(null, 1920, 1080, "render"), Times.Once);
+    }
+
+    [Fact]
+    public async Task WpfCaptureScreenshot_PreservesRealElementHandle()
+    {
+        _ipcBridgeMock
+            .Setup(x => x.CaptureScreenshotAsync("elem_00000009", 800, 600, "screen"))
+            .ReturnsAsync(new ScreenshotResult
+            {
+                ImageBase64 = "xyz",
+                Width = 80,
+                Height = 40,
+                MimeType = "image/png",
+                ElementType = "RadioButton"
+            });
+
+        await _tools.WpfCaptureScreenshot(
+            element_handle: "elem_00000009", max_width: 800, max_height: 600, mode: "screen");
+
+        _ipcBridgeMock.Verify(
+            x => x.CaptureScreenshotAsync("elem_00000009", 800, 600, "screen"), Times.Once);
+    }
+
+    [Fact]
     public async Task WpfDiff_ReturnsCountsAndParsedDiff()
     {
         _ipcBridgeMock

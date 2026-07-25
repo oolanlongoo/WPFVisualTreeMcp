@@ -431,7 +431,8 @@ public class NamedPipeBridge : IIpcBridge
 
         var request = new CaptureScreenshotRequest
         {
-            ElementHandle = elementHandle,
+            // window_0x… from attach is not a visual-tree handle — map to whole-window capture.
+            ElementHandle = ElementHandleNormalizer.ForVisualTree(elementHandle),
             MaxWidth = maxWidth,
             MaxHeight = maxHeight,
             Mode = mode
