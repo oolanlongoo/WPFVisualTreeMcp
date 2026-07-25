@@ -175,7 +175,7 @@ std::wstring GetInspectorDllPath()
     return sameDirPath;
 }
 
-/// Finds the CoreCLR Inspector DLL (net8.0-windows) in coreclr/ subdirectory
+/// Finds the CoreCLR Inspector DLL (net10.0-windows) in coreclr/ subdirectory
 std::wstring GetInspectorDllPath_CoreCLR()
 {
     std::wstring dir = GetBootstrapperDir();
@@ -415,7 +415,7 @@ HRESULT InitializeInspectorCoreCLR()
     }
     WriteDebugLog(L"Got load_assembly_and_get_function_pointer delegate");
 
-    // 6. Load the net8.0 Inspector assembly and get InitializeUnmanaged
+    // 6. Load the net10.0 Inspector assembly and get InitializeUnmanaged
     component_entry_point_fn initFn = nullptr;
     rc = loadAssembly(
         inspectorPath.c_str(),

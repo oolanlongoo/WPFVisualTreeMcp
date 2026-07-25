@@ -570,7 +570,14 @@ public class InspectorService : IDisposable
             return new HighlightElementResponse { Success = false, Error = WrongElementTypeError(request.ElementHandle, resolved, "UIElement") };
         }
 
-        _highlighter.Highlight(element, request.DurationMs);
+        if (!_highlighter.Highlight(element, request.DurationMs))
+        {
+            return new HighlightElementResponse
+            {
+                Success = false,
+                Error = "Could not highlight element (no window, zero size, or not on screen)."
+            };
+        }
         return new HighlightElementResponse { RequestId = request.RequestId };
     }
 
@@ -983,7 +990,7 @@ public class InspectorService : IDisposable
         if (format == "xaml")
         {
             content = _treeWalker.ExportToXaml(root);
-            count = CountElements(content);
+            count = CountXamlElements(content);
         }
         else
         {
@@ -1294,6 +1301,30 @@ public class InspectorService : IDisposable
         {
             count++;
             index++;
+        }
+        return count;
+    }
+
+    /// <summary>
+    /// Counts XAML element open tags (skips &lt;?xml …&gt;, comments, and closing tags).
+    /// </summary>
+    private static int CountXamlElements(string xaml)
+    {
+        if (string.IsNullOrEmpty(xaml)) return 0;
+
+        int count = 0;
+        int index = 0;
+        while (index < xaml.Length)
+        {
+            int lt = xaml.IndexOf('<', index);
+            if (lt < 0 || lt + 1 >= xaml.Length)
+                break;
+
+            char next = xaml[lt + 1];
+            if (next != '?' && next != '!' && next != '/')
+                count++;
+
+            index = lt + 1;
         }
         return count;
     }

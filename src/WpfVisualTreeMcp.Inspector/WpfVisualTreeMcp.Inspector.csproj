@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <OutputType>Library</OutputType>
     <RootNamespace>WpfVisualTreeMcp.Inspector</RootNamespace>
     <AssemblyName>WpfVisualTreeMcp.Inspector</AssemblyName>
     <LangVersion>12.0</LangVersion>
     <Nullable>enable</Nullable>
-    <UseWPF Condition="'$(TargetFramework)' == 'net8.0-windows'">true</UseWPF>
+    <UseWPF Condition="'$(TargetFramework)' == 'net10.0-windows'">true</UseWPF>
   </PropertyGroup>
 
   <!-- .NET Framework 4.8: explicit WPF references -->
-  <!-- (net8.0-windows pulls these in automatically via UseWPF) -->
+  <!-- (net10.0-windows pulls these in automatically via UseWPF) -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

@@ -660,6 +660,12 @@ public class NamedPipeBridge : IIpcBridge
             _logger.LogWarning(errorMsg);
             return new TResponse { Success = false, Error = errorMsg };
         }
+        catch (OperationCanceledException)
+        {
+            var errorMsg = $"Connection to process {processId} timed out. The Inspector may not be loaded. Try restarting the application or use wpf_list_processes() and wpf_attach() to reconnect.";
+            _logger.LogWarning(errorMsg);
+            return new TResponse { Success = false, Error = errorMsg };
+        }
         catch (IOException ex)
         {
             var errorMsg = $"Cannot connect to process {processId}: {ex.Message}. The named pipe may not exist. Use wpf_list_processes() to see available WPF applications, then wpf_attach(process_id=<new_pid>) to connect.";
@@ -776,7 +782,8 @@ public class NamedPipeBridge : IIpcBridge
                     {
                         Name = prop.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "",
                         TypeName = prop.TryGetProperty("typeName", out var t) ? t.GetString() ?? "" : "",
-                        Value = prop.TryGetProperty("value", out var v) ? v.GetString() : null,
+                        // Values may be JSON strings, numbers, bools, or null — never assume String.
+                        Value = prop.TryGetProperty("value", out var v) ? JsonElementToDisplayString(v) : null,
                         Source = prop.TryGetProperty("source", out var s) ? s.GetString() ?? "Unknown" : "Unknown"
                     });
                 }
@@ -789,6 +796,16 @@ public class NamedPipeBridge : IIpcBridge
 
         return result;
     }
+
+    private static string? JsonElementToDisplayString(JsonElement v) => v.ValueKind switch
+    {
+        JsonValueKind.Null => null,
+        JsonValueKind.String => v.GetString(),
+        JsonValueKind.True => "true",
+        JsonValueKind.False => "false",
+        JsonValueKind.Number => v.GetRawText(),
+        _ => v.GetRawText()
+    };
 
     private FindElementsResult ParseFindElementsResponse(FindElementsResponse response)
     {

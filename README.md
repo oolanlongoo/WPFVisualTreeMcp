@@ -4,7 +4,7 @@
 
 [![Build](https://github.com/faze79/WpfVisualTreeMcp/actions/workflows/build.yml/badge.svg)](https://github.com/faze79/WpfVisualTreeMcp/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/faze79/WpfVisualTreeMcp)](https://github.com/faze79/WpfVisualTreeMcp/releases)
-[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green)](https://modelcontextprotocol.io/)
 
@@ -16,7 +16,7 @@
 
 ## Quickstart (60 seconds)
 
-1. Download and extract the [latest release](https://github.com/faze79/WPFVisualTreeMcp/releases) zip (requires the [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0)).
+1. Download and extract the [latest release](https://github.com/faze79/WPFVisualTreeMcp/releases) zip (requires the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)).
 2. Register it in your MCP client — for Claude Code, add to `.mcp.json`:
    ```json
    {
@@ -118,7 +118,7 @@ In short: UIA-based tools see what accessibility exposes, and computer-use agent
 ### Prerequisites
 
 - Windows 10/11
-- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) or later
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or later
 - A WPF application to inspect
 
 ### Installation
@@ -392,7 +392,7 @@ For complete tool documentation, see [docs/TOOLS_REFERENCE.md](docs/TOOLS_REFERE
 
 ### Phase 5: Multi-architecture ✅ *(v0.6.0)*
 - [x] Cross-bitness auto-injection (64-bit server → 32-bit target)
-- [x] Architecture-matching `WpfInjectorHelper.exe` (32-bit .NET 8)
+- [x] Architecture-matching `WpfInjectorHelper.exe` (32-bit .NET 10)
 - [x] Removes v0.5.0 known limitation; both x86 and x64 WPF apps drivable
 
 ### Phase 6: Query engine & full driving ✅ *(v0.7.0)*
@@ -461,14 +461,14 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ```
 WpfVisualTreeMcp/
 ├── src/
-│   ├── WpfVisualTreeMcp.Server/        # MCP Server (.NET 8) - Uses official MCP SDK
+│   ├── WpfVisualTreeMcp.Server/        # MCP Server (.NET 10) - Uses official MCP SDK
 │   │   ├── Program.cs                  # Server initialization with MCP SDK
 │   │   ├── WpfTools.cs                 # 20 WPF tools (17 inspection + click/set-text/send-keys)
 │   │   ├── Cli/CliRunner.cs            # One-shot CLI front-end (v0.4.0)
 │   │   └── Services/                   # Process & IPC management
 │   ├── WpfVisualTreeMcp.Inspector/     # Injected DLL (.NET Framework 4.8)
-│   ├── WpfVisualTreeMcp.Injector/      # Managed injection logic (CreateRemoteThread; net48 + net8.0)
-│   ├── WpfVisualTreeMcp.InjectorHelper/# x86 .NET 8 helper exe for cross-arch injection (v0.6.0)
+│   ├── WpfVisualTreeMcp.Injector/      # Managed injection logic (CreateRemoteThread; net48 + net10.0)
+│   ├── WpfVisualTreeMcp.InjectorHelper/# x86 .NET 10 helper exe for cross-arch injection (v0.6.0)
 │   ├── WpfVisualTreeMcp.Bootstrapper/  # Native C++ DLL for CLR hosting
 │   └── WpfVisualTreeMcp.Shared/        # Shared models & IPC contracts
 ├── samples/
@@ -484,7 +484,7 @@ WpfVisualTreeMcp/
 
 - **MCP SDK**: Built with the [official C# MCP SDK](https://github.com/modelcontextprotocol/csharp-sdk) from Microsoft/Anthropic
 - **Protocol**: JSON-RPC 2.0 over stdio transport
-- **Target Framework**: .NET 8.0 (Server) / .NET Framework 4.8 + .NET 8.0-windows (Inspector, dual-target)
+- **Target Framework**: .NET 10.0 (Server) / .NET Framework 4.8 + .NET 10.0-windows (Inspector, dual-target)
 - **IPC**: Named Pipes for server-to-application communication
 - **Tools**: 26 tools auto-discovered via `[McpServerTool]` attributes (20 read-only inspection incl. `wpf_wait_for`, `wpf_snapshot`, `wpf_diff` + 6 state-changing: `wpf_click_element`, `wpf_select_item`, `wpf_set_text`, `wpf_send_keys`, `wpf_set_property`, `wpf_revert_property`)
 - **CLI**: same executable runs as one-shot CLI when given a subcommand (`Program.cs` routes via `CliRunner.IsCliCommand`)

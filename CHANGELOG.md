@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] - 2026-07-25
+
+### Changed
+
+- **Target frameworks** upgraded from .NET 8 to **.NET 10**: Server, tests, InjectorHelper,
+  Shared (`net10.0`), Injector (`net10.0`), and Inspector CoreCLR leg (`net10.0-windows`).
+  The **net48** legs remain for .NET Framework WPF injection.
+- Microsoft.Extensions.* and Serilog.Extensions.Hosting bumped to 10.x; CI / Docker SDK to 10.0.
+- CoreCLR Inspector `runtimeconfig` now declares `tfm: net10.0` and
+  `Microsoft.WindowsDesktop.App` 10.0.0.
+
+### Fixed
+
+- **PropertyWatcher** reported the watch-start value as `oldValue` on every change; now uses the
+  previous value (`LastValue`).
+- **NamedPipeBridge** mapped only `TimeoutException` to a friendly timeout message; cancellation
+  from connect/read CTS now surfaces the same clear error.
+- **ElementHighlighter** used `Window.Left`/`Top` (wrong under DPI / maximized); now uses
+  `PointToScreen`, and reports failure when highlight cannot be shown.
+- **XAML export** `elementCount` was always 0 (counted `"handle"` substrings); now counts XAML
+  element open tags.
+- **ControlInteractor** rejected Popup content with `IsVisible == false`; aligns with TreeWalker
+  and allows interaction with open dropdowns/menus.
+- **`wpf_get_element_properties`** returned empty lists: (1) `double.NaN`/`Infinity` were emitted
+  as invalid JSON tokens; (2) the server parser called `JsonElement.GetString()` on bool/number
+  values and aborted. Both fixed — properties now round-trip correctly.
+
+### Known issues
+
+- `wpf_watch_property` still cannot push change notifications to the MCP client (IPC is
+  request/response only); the watch API and `oldValue` fix remain useful once a notification
+  channel or poll API is added.
+
 ## [0.10.0] - 2026-07-15
 
 ### Added

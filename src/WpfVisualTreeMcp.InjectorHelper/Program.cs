@@ -4,7 +4,7 @@
 // usual CreateRemoteThread + LoadLibraryW technique, because the LoadLibraryW
 // address it resolves comes from its own (64-bit) kernel32 and is invalid in
 // the target's 32-bit address space. This tiny exe is built as 32-bit
-// .NET 8 and is spawned by ProcessInjector when a bitness mismatch is detected;
+// .NET 10 and is spawned by ProcessInjector when a bitness mismatch is detected;
 // it just performs the LoadLibrary remote-thread call in matching bitness and
 // exits.
 //

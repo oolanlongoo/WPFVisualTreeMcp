@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <!--
-      Multi-targeted so the x86 InjectorHelper (net8.0) can reference us without
+      Multi-targeted so the x86 InjectorHelper (net10.0) can reference us without
       a cross-TFM warning. .NET Framework 4.8 stays around so the existing server
       build path is unchanged.
     -->
-    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+    <TargetFrameworks>net48;net10.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <RootNamespace>WpfVisualTreeMcp.Injector</RootNamespace>
     <AssemblyName>WpfVisualTreeMcp.Injector</AssemblyName>
@@ -16,7 +16,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WpfVisualTreeMcp.Inspector\WpfVisualTreeMcp.Inspector.csproj" />
+    <!--
+      Build-order only — ProcessInjector never references Inspector types.
+      ReferenceOutputAssembly=false avoids NU1702 / WindowsBase conflicts when
+      net10.0 would otherwise pull net10.0-windows (or fall back to net48).
+    -->
+    <ProjectReference Include="..\WpfVisualTreeMcp.Inspector\WpfVisualTreeMcp.Inspector.csproj"
+                      ReferenceOutputAssembly="false"
+                      PrivateAssets="all"
+                      SkipGetTargetFrameworkProperties="true"
+                      UndefineProperties="TargetFramework;TargetFrameworks" />
   </ItemGroup>
 
 </Project>

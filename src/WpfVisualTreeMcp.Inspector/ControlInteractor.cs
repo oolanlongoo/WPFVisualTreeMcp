@@ -10,6 +10,7 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace WpfVisualTreeMcp.Inspector;
 
@@ -415,8 +416,37 @@ internal sealed class ControlInteractor
     {
         if (!element.IsEnabled)
             throw new InvalidOperationException($"Element is disabled and cannot be {action}.");
-        if (!element.IsVisible)
-            throw new InvalidOperationException($"Element is not visible and cannot be {action}.");
+
+        if (element.IsVisible)
+            return;
+
+        // Align with TreeWalker: Popup itself is never IsVisible, but its open child
+        // tree is on-screen. Allow interaction with elements hosted in an open Popup.
+        if (IsInOpenPopup(element))
+            return;
+
+        throw new InvalidOperationException($"Element is not visible and cannot be {action}.");
+    }
+
+    /// <summary>
+    /// True when <paramref name="element"/> is a Popup that is open, or is in the
+    /// visual/logical tree under an open Popup.
+    /// </summary>
+    private static bool IsInOpenPopup(DependencyObject element)
+    {
+        for (DependencyObject? current = element; current != null; )
+        {
+            if (current is Popup popup)
+                return popup.IsOpen;
+
+            DependencyObject? parent = null;
+            if (current is Visual visual)
+                parent = VisualTreeHelper.GetParent(visual);
+            parent ??= LogicalTreeHelper.GetParent(current);
+            current = parent;
+        }
+
+        return false;
     }
 
     /// <summary>

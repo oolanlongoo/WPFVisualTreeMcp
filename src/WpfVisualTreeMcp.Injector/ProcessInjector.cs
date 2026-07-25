@@ -181,13 +181,13 @@ public class ProcessInjector
             return nativePath;
 
         // 2. Build output relative to source (dev environment). The InjectorHelper
-        // is published per-RID, so its bin layout is bin/<Configuration>/net8.0/win-<arch>/.
+        // is published per-RID, so its bin layout is bin/<Configuration>/net10.0/win-<arch>/.
         foreach (var config in new[] { "Release", "Debug" })
         {
             var devPath = Path.GetFullPath(Path.Combine(
                 directory, "..", "..", "..", "..",
                 "src", "WpfVisualTreeMcp.InjectorHelper",
-                "bin", config, "net8.0", $"win-{arch}",
+                "bin", config, "net10.0", $"win-{arch}",
                 "WpfInjectorHelper.exe"));
             if (File.Exists(devPath))
                 return devPath;
@@ -359,12 +359,26 @@ public class ProcessInjector
 
     /// <summary>
     /// Gets the path where the Inspector DLL should be located.
+    /// Prefers a DLL next to the Injector assembly, then the publish
+    /// <c>native/{arch}/</c> layout used by the bootstrapper.
     /// </summary>
     public string GetInspectorDllPath()
     {
         var assemblyLocation = typeof(ProcessInjector).Assembly.Location;
-        var directory = Path.GetDirectoryName(assemblyLocation);
-        return Path.Combine(directory!, "WpfVisualTreeMcp.Inspector.dll");
+        var directory = Path.GetDirectoryName(assemblyLocation)!;
+
+        var local = Path.Combine(directory, "WpfVisualTreeMcp.Inspector.dll");
+        if (File.Exists(local))
+            return local;
+
+        foreach (var arch in new[] { "x64", "x86" })
+        {
+            var native = Path.Combine(directory, "native", arch, "WpfVisualTreeMcp.Inspector.dll");
+            if (File.Exists(native))
+                return native;
+        }
+
+        return local;
     }
 
     /// <summary>

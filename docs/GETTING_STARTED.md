@@ -7,7 +7,7 @@ This guide will help you set up and start using WpfVisualTreeMcp to inspect WPF 
 Before you begin, ensure you have:
 
 - **Windows 10/11** - WPF applications only run on Windows
-- **.NET 8.0 SDK** - [Download here](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **.NET 10.0 SDK** - [Download here](https://dotnet.microsoft.com/download/dotnet/10.0)
 - **A WPF application** - Either your own or the included sample app
 - **An MCP-compatible AI agent** - Claude Code, Cursor, or similar
 
@@ -28,7 +28,7 @@ Before you begin, ensure you have:
 
 3. The MCP server will be available at:
    ```
-   src/WpfVisualTreeMcp.Server/bin/Debug/net8.0/WpfVisualTreeMcp.Server.exe
+   src/WpfVisualTreeMcp.Server/bin/Debug/net10.0/WpfVisualTreeMcp.Server.exe
    ```
 
 ### Option 2: .NET Tool Installation (Coming Soon)
@@ -53,10 +53,10 @@ cd WpfVisualTreeMcp
 dotnet build -c Release
 
 # Add to current project only
-claude mcp add wpf-visual-tree -- C:/path/to/WpfVisualTreeMcp/src/WpfVisualTreeMcp.Server/bin/Release/net8.0/WpfVisualTreeMcp.Server.exe
+claude mcp add wpf-visual-tree -- C:/path/to/WpfVisualTreeMcp/src/WpfVisualTreeMcp.Server/bin/Release/net10.0/WpfVisualTreeMcp.Server.exe
 
 # Or add globally (available in all projects)
-claude mcp add --scope user wpf-visual-tree -- C:/path/to/WpfVisualTreeMcp/src/WpfVisualTreeMcp.Server/bin/Release/net8.0/WpfVisualTreeMcp.Server.exe
+claude mcp add --scope user wpf-visual-tree -- C:/path/to/WpfVisualTreeMcp/src/WpfVisualTreeMcp.Server/bin/Release/net10.0/WpfVisualTreeMcp.Server.exe
 ```
 
 Verify the server was added:
@@ -77,7 +77,7 @@ Create or edit `.mcp.json` in your project root:
 {
   "mcpServers": {
     "wpf-visual-tree": {
-      "command": "C:/path/to/WpfVisualTreeMcp/src/WpfVisualTreeMcp.Server/bin/Release/net8.0/WpfVisualTreeMcp.Server.exe",
+      "command": "C:/path/to/WpfVisualTreeMcp/src/WpfVisualTreeMcp.Server/bin/Release/net10.0/WpfVisualTreeMcp.Server.exe",
       "args": []
     }
   }

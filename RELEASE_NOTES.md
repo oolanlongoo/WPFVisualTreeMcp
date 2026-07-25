@@ -1,5 +1,19 @@
 # Release Notes
 
+## v0.11.0 — .NET 10 upgrade & inspector fixes (2026-07-25)
+
+The MCP server, InjectorHelper, tests, and CoreCLR Inspector path now target **.NET 10**.
+.NET Framework 4.8 injection (bootstrapper + net48 Inspector) is unchanged.
+
+Also fixes several real inspector/IPC bugs: PropertyWatcher `oldValue`, NamedPipeBridge
+timeout messaging, highlight screen coordinates, XAML export element count, and Popup
+interactability.
+
+Requires the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)
+(and the 32-bit runtime when injecting into x86 targets via `WpfInjectorHelper`).
+
+---
+
 ## v0.10.0 — Snapshot & diff: measure a change's effect (2026-07-15)
 
 v0.9.0 let an agent *make* a live UI change. This release lets it *measure* the effect — closing the "change → is it effective?" loop.

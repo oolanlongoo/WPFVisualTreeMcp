@@ -66,14 +66,23 @@ public class ProcessInjectorTests
     [Fact]
     public void InjectIntoProcess_WithInvalidProcessId_ThrowsInvalidOperationException()
     {
-        // Arrange
+        // Arrange — use a temp stub so this test does not depend on Inspector
+        // being copied next to the test host (build-order / TFM layout).
         var invalidProcessId = int.MaxValue - 1;
-        var dllPath = _injector.GetInspectorDllPath();
+        var dllPath = Path.Combine(Path.GetTempPath(), $"WpfVisualTreeMcp.Inspector.{Guid.NewGuid():N}.dll");
+        File.WriteAllBytes(dllPath, Array.Empty<byte>());
 
-        // Act & Assert
-        var act = () => _injector.InjectIntoProcess(invalidProcessId, dllPath);
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*not found*");
+        try
+        {
+            // Act & Assert
+            var act = () => _injector.InjectIntoProcess(invalidProcessId, dllPath);
+            act.Should().Throw<InvalidOperationException>()
+                .WithMessage("*not found*");
+        }
+        finally
+        {
+            File.Delete(dllPath);
+        }
     }
 
     [Fact]

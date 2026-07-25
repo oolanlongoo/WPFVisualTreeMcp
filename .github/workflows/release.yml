@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 env:
-  DOTNET_VERSION: '8.0.x'
+  DOTNET_VERSION: '10.0.x'
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
@@ -45,7 +45,7 @@ jobs:
       run: dotnet publish src/WpfVisualTreeMcp.Server/WpfVisualTreeMcp.Server.csproj --no-build --configuration Release --output ./publish/server
 
     - name: Publish Inspector DLL
-      run: dotnet publish src/WpfVisualTreeMcp.Inspector/WpfVisualTreeMcp.Inspector.csproj --configuration Release --framework net8.0-windows --output ./publish/inspector
+      run: dotnet publish src/WpfVisualTreeMcp.Inspector/WpfVisualTreeMcp.Inspector.csproj --configuration Release --framework net10.0-windows --output ./publish/inspector
 
     - name: Create release archive
       run: |

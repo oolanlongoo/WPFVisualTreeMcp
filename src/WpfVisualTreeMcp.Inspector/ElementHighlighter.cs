@@ -14,14 +14,15 @@ public class ElementHighlighter
     private Window? _overlayWindow;
     private DispatcherTimer? _hideTimer;
 
-    public void Highlight(UIElement element, int durationMs = 2000)
+    /// <summary>
+    /// Shows a red overlay over <paramref name="element"/> for <paramref name="durationMs"/>.
+    /// Returns false when the element has no valid on-screen bounds (no window, zero size, etc.).
+    /// </summary>
+    public bool Highlight(UIElement element, int durationMs = 2000)
     {
-        // Get element bounds in screen coordinates
-        var window = Window.GetWindow(element);
-        if (window == null) return;
-
-        var bounds = GetElementBounds(element, window);
-        if (bounds == Rect.Empty) return;
+        var bounds = GetElementScreenBoundsInDips(element);
+        if (bounds == Rect.Empty || bounds.Width <= 0 || bounds.Height <= 0)
+            return false;
 
         // Remove existing overlay
         HideOverlay();
@@ -61,6 +62,7 @@ public class ElementHighlighter
             HideOverlay();
         };
         _hideTimer.Start();
+        return true;
     }
 
     private void HideOverlay()
@@ -72,21 +74,26 @@ public class ElementHighlighter
         _overlayWindow = null;
     }
 
-    private static Rect GetElementBounds(UIElement element, Window window)
+    /// <summary>
+    /// Device-pixel screen bounds via PointToScreen, converted to DIPs for WPF Window placement.
+    /// </summary>
+    private static Rect GetElementScreenBoundsInDips(UIElement element)
     {
         try
         {
-            var transform = element.TransformToAncestor(window);
-            var topLeft = transform.Transform(new Point(0, 0));
             var size = element.RenderSize;
+            if (size.Width <= 0 || size.Height <= 0)
+                return Rect.Empty;
 
-            // Convert to screen coordinates
-            var windowLocation = new Point(window.Left, window.Top);
-            var screenTopLeft = new Point(
-                windowLocation.X + topLeft.X,
-                windowLocation.Y + topLeft.Y);
+            var topLeftDevice = element.PointToScreen(new Point(0, 0));
+            var bottomRightDevice = element.PointToScreen(new Point(size.Width, size.Height));
 
-            return new Rect(screenTopLeft, size);
+            var source = PresentationSource.FromVisual(element);
+            var fromDevice = source?.CompositionTarget?.TransformFromDevice ?? Matrix.Identity;
+            var topLeft = fromDevice.Transform(topLeftDevice);
+            var bottomRight = fromDevice.Transform(bottomRightDevice);
+
+            return new Rect(topLeft, bottomRight);
         }
         catch
         {

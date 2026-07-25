@@ -176,6 +176,12 @@ public class PropertyReader
         }
         if (type.IsPrimitive || type == typeof(decimal))
         {
+            // JSON has no NaN/Infinity — quote non-finite floats so the payload stays valid.
+            if (value is double d && (double.IsNaN(d) || double.IsInfinity(d)))
+                return $"\"{d}\"";
+            if (value is float f && (float.IsNaN(f) || float.IsInfinity(f)))
+                return $"\"{f}\"";
+
             return value.ToString() ?? "null";
         }
 

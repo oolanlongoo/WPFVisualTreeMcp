@@ -12,7 +12,7 @@ WpfVisualTreeMcp is designed as a bridge between AI coding agents and running WP
 
 The MCP Server is the main entry point that communicates with AI agents via the Model Context Protocol.
 
-**Technology:** .NET 8.0
+**Technology:** .NET 10.0
 
 **Responsibilities:**
 - Handle MCP protocol communication (stdio transport)

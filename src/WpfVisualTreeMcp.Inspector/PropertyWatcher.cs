@@ -40,11 +40,15 @@ public class PropertyWatcher : IDisposable
         var initialValue = element.GetValue(dpd.DependencyProperty);
         var initialValueStr = FormatValue(initialValue);
 
-        // Add value changed handler
+        // Add value changed handler — report previous LastValue as oldValue, then update it.
         EventHandler handler = (sender, args) =>
         {
-            var newValue = element.GetValue(dpd.DependencyProperty);
-            OnPropertyChanged(watchId, propertyName, initialValueStr, FormatValue(newValue));
+            if (!_watches.TryGetValue(watchId, out var watchEntry))
+                return;
+
+            var newValueStr = FormatValue(element.GetValue(dpd.DependencyProperty));
+            var oldValueStr = watchEntry.LastValue;
+            OnPropertyChanged(watchId, propertyName, oldValueStr, newValueStr);
         };
 
         dpd.AddValueChanged(element, handler);
