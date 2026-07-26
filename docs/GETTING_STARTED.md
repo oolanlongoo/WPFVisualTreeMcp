@@ -1,5 +1,7 @@
 # Getting Started
 
+[简体中文](zh-CN/GETTING_STARTED.md)
+
 This guide will help you set up and start using WpfVisualTreeMcp to inspect WPF applications with AI coding agents.
 
 ## Prerequisites

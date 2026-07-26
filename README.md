@@ -2,6 +2,8 @@
 
 <!-- mcp-name: io.github.faze79/wpf-visual-tree -->
 
+**English** | [简体中文](README.zh-CN.md)
+
 [![Build](https://github.com/faze79/WpfVisualTreeMcp/actions/workflows/build.yml/badge.svg)](https://github.com/faze79/WpfVisualTreeMcp/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/faze79/WpfVisualTreeMcp)](https://github.com/faze79/WpfVisualTreeMcp/releases)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
@@ -322,7 +324,7 @@ Export the visual tree of the current window to JSON format so I can analyze the
 └─────────────────────────────────────────────────────────────┘
 ```
 
-For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Chinese docs: [README.zh-CN.md](README.zh-CN.md) / [docs/zh-CN/](docs/zh-CN/).
 
 ## Available Tools
 
